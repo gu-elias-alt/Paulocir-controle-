@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paulocir | Painel de Compras</title>
+<style>
+:root{
+  --bg:#f4f5f7;--card:#fff;--text:#16181d;--muted:#6b7280;--line:#e5e7eb;
+  --red:#d71920;--dark:#111827;--green:#138a5b;--amber:#b7791f;--blue:#2563eb;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+header{background:#111;color:#fff;position:sticky;top:0;z-index:20;box-shadow:0 2px 12px #0002}
+.wrap{max-width:1220px;margin:auto;padding:0 16px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--red);display:grid;place-items:center;font-weight:900;font-size:22px}
+.brand h1{font-size:18px;margin:0}
+.brand p{font-size:12px;color:#c9cbd1;margin:2px 0 0}
+main{padding:18px 0 90px}
+.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-bottom:14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+.hero h2{margin:0 0 6px;font-size:24px}.hero p{margin:0;color:var(--muted);line-height:1.45}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:#fafafa;border:1px solid var(--line);border-radius:13px;padding:10px}
+.stat strong{font-size:21px;display:block}.stat span{font-size:11px;color:var(--muted)}
+.nav{display:flex;gap:8px;overflow:auto;padding:4px 0 12px}
+.nav button{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 13px;cursor:pointer;font-weight:700}
+.nav button.active{background:#111;color:#fff;border-color:#111}
+.toolbar{display:grid;grid-template-columns:minmax(200px,1fr) repeat(3,auto);gap:8px;margin-bottom:12px}
+.toolbar input,.toolbar select{border:1px solid #d1d5db;border-radius:11px;padding:10px 11px;background:#fff}
+.btn{border:0;border-radius:11px;padding:10px 12px;font-weight:800;cursor:pointer;background:#111;color:#fff}
+.btn.light{background:#fff;color:#111;border:1px solid #d1d5db}
+.btn.red{background:var(--red)}
+.btn.green{background:var(--green)}
+.section-title{display:flex;justify-content:space-between;align-items:end;gap:10px;margin:12px 0}
+.section-title h3{margin:0;font-size:18px}.section-title small{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;display:flex;flex-direction:column;gap:8px;min-height:290px}
+.card.hot{outline:3px solid #ffd5d7}
+.line1{display:flex;align-items:start;justify-content:space-between;gap:8px}
+.priority{font-size:10px;font-weight:900;border-radius:999px;padding:5px 7px;border:1px solid var(--line)}
+.priority.A{background:#fff1f2;color:#b20d16;border-color:#ffc7cb}.priority.B{background:#fff8e7;color:#8a5d00}.priority.C{color:#555}
+.name{font-weight:900;font-size:16px;line-height:1.2}.cat{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.meta{display:flex;gap:5px;flex-wrap:wrap}.tag{font-size:10px;background:#f3f4f6;border-radius:7px;padding:5px 6px}
+.lost{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff7f7;border:1px solid #ffd8da;border-radius:10px;padding:8px}
+.lost strong{font-size:12px}.lost button{border:0;background:var(--red);color:#fff;border-radius:8px;padding:6px 9px;font-weight:900;cursor:pointer}
+.notes{font-size:12px;color:var(--muted);line-height:1.35}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:auto}
+.actions button{border:0;border-radius:9px;padding:8px;font-weight:800;cursor:pointer}
+.dark{background:#111;color:#fff}.soft{background:#f3f4f6}.ok{background:#eaf8f1;color:var(--green)}.warn{background:#fff6df;color:#8a5d00}
+.stage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stage{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+.stage-head{display:flex;justify-content:space-between;gap:8px;font-weight:800;font-size:13px}
+.bar{height:8px;background:#eceef1;border-radius:99px;overflow:hidden;margin-top:8px}
+.bar span{display:block;height:100%;background:#111}
+.empty{grid-column:1/-1;text-align:center;padding:40px 12px;color:var(--muted)}
+.fab{position:fixed;right:18px;bottom:18px;border:0;border-radius:999px;padding:14px 18px;background:var(--red);color:#fff;font-weight:900;box-shadow:0 8px 28px #0003;cursor:pointer}
+.modal-wrap{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal{background:#fff;border-radius:18px;padding:16px;width:min(720px,100%);max-height:92vh;overflow:auto}
+.modal h3{margin:0 0 12px}.form{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.form label{display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--muted)}
+.form input,.form select,.form textarea{border:1px solid #d1d5db;border-radius:10px;padding:10px;background:#fff;color:#111}
+.form textarea{min-height:80px;resize:vertical}.wide{grid-column:1/-1}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}.stage-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){
+  .toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}
+  .grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}
+  .stage-grid{grid-template-columns:1fr}.form{grid-template-columns:1fr}.wide{grid-column:auto}
+  .brand p{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap topbar">
+    <div class="brand"><div class="logo">P</div><div><h1>PAULOCIR — Painel de Compras</h1><p>ConstruJá + Fera + Benchmark São Pedro | mix, reposição, novidades e compras</p></div></div>
+    <button class="btn light" id="backupBtn">Backup</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="panel">
+      <h2>Seu assistente de compras da loja</h2>
+      <p>Use o painel para lembrar o que falta, o que precisa repor, o que comprar agora e quais novidades dos fornecedores merecem teste.</p>
+    </div>
+    <div class="panel stats">
+      <div class="stat"><strong id="sMissing">0</strong><span>ainda não tenho</span></div>
+      <div class="stat"><strong id="sReorder">0</strong><span>precisa repor</span></div>
+      <div class="stat"><strong id="sBuy">0</strong><span>comprar agora</span></div>
+      <div class="stat"><strong id="sHave">0</strong><span>já tenho</span></div>
+      <div class="stat"><strong id="sNews">0</strong><span>novidades</span></div>
+      <div class="stat"><strong id="sLost">0</strong><span>pedidos perdidos</span></div>
+    </div>
+  </section>
+
+  <div class="nav" id="nav"></div>
+
+  <div class="toolbar">
+    <input id="search" placeholder="Buscar produto, categoria ou fornecedor...">
+    <select id="supplierFilter">
+      <option value="">Todos fornecedores</option>
+      <option>ConstruJá</option><option>Fera</option><option>Ambos</option>
+    </select>
+    <select id="priorityFilter">
+      <option value="">Todas prioridades</option><option>A</option><option>B</option><option>C</option>
+    </select>
+    <select id="stageFilter"><option value="">Todas etapas</option></select>
+  </div>
+
+  <div id="stagePanel" style="display:none">
+    <div class="section-title"><h3>Casa completa — cobertura do mix</h3><small>% de itens marcados como “já tenho”</small></div>
+    <div class="stage-grid" id="stageGrid"></div>
+  </div>
+
+  <div class="section-title"><h3 id="viewTitle">Ainda não tenho</h3><small id="countText"></small></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<button class="fab" id="addBtn">+ Produto</button>
+
+<div class="modal-wrap" id="modalWrap">
+<div class="modal">
+  <h3 id="modalTitle">Adicionar produto</h3>
+  <div class="form">
+    <label>Produto<input id="fName"></label>
+    <label>Categoria<input id="fCat" placeholder="Ex.: Hidráulica"></label>
+    <label>Fornecedor
+      <select id="fSupplier"><option>ConstruJá</option><option>Fera</option><option>Ambos</option></select>
+    </label>
+    <label>Prioridade
+      <select id="fPriority"><option>A</option><option>B</option><option>C</option></select>
+    </label>
+    <label>Etapa da obra
+      <select id="fStage"></select>
+    </label>
+    <label>Origem
+      <select id="fOrigin"><option>Essencial da obra</option><option>Manutenção</option><option>Cliente pediu</option><option>Novidade do fornecedor</option></select>
+    </label>
+    <label>Quantidade ideal<input id="fIdeal" type="number" min="0" value="2"></label>
+    <label>Estoque mínimo<input id="fMin" type="number" min="0" value="1"></label>
+    <label>Último preço pago (R$)<input id="fPrice" type="number" min="0" step="0.01"></label>
+    <label>Última compra<input id="fLastBuy" type="date"></label>
+    <label class="wide">Observação<textarea id="fNotes" placeholder="Por que ter na loja, tamanho, marca, detalhe do item..."></textarea></label>
+  </div>
+  <div class="modal-actions">
+    <button class="btn light" id="cancelBtn">Cancelar</button>
+    <button class="btn red" id="saveBtn">Salvar</button>
+  </div>
+</div>
+</div>
+
+<script>
+const DBKEY='paulocirCatalogoV2';
+const STAGES=['Fundação','Alvenaria','Estrutura / Laje','Telhado','Hidráulica','Elétrica','Piso e revestimento','Banheiro','Portas e janelas','Pintura','Acabamento','Ferramentas','Manutenção'];
+
+const seed=[
+
+{name:'TRAMON - COLHER PEDR SOLDADA 09 RETO',cat:'Ferramentas de pedreiro',supplier:'ConstruJá',ideal:3,priority:'A',stage:'Ferramentas'},
+{name:'THOMPSON - DESEMP AÇO LISA 12X48 CABO PLASTICO',cat:'Ferramentas de pedreiro',supplier:'ConstruJá',ideal:3,priority:'A',stage:'Ferramentas'},
+{name:'DESEMPENADEIRA AÇO DENTADA',cat:'Piso e revestimento',supplier:'ConstruJá',ideal:3,priority:'A',stage:'Piso e revestimento'},
+{name:'THOMPSON - PRUMO PAREDE AÇO MACIÇO 500G',cat:'Medição',supplier:'ConstruJá',ideal:2,priority:'A',stage:'Ferramentas'},
+{name:'LINHA PEDREIRO',cat:'Medição',supplier:'ConstruJá',ideal:6,priority:'A',stage:'Ferramentas'},
+{name:'THOMPSON - NIVEL TRAPEZIO ALUM 35 NAT 2 BOLHAS',cat:'Medição',supplier:'ConstruJá',ideal:2,priority:'A',stage:'Ferramentas'},
+{name:'MARTELO FORJADO C/UNHA C/CABO MADEIRA',cat:'Ferramentas manuais',supplier:'ConstruJá',ideal:3,priority:'A',stage:'Ferramentas'},
+{name:'MARRETA FORJADA C/ CABO',cat:'Ferramentas manuais',supplier:'ConstruJá',ideal:2,priority:'A',stage:'Ferramentas'},
+{name:'BELZER - ALICATE UNIV 8 CRV 1000V 219022',cat:'Ferramentas manuais',supplier:'ConstruJá',ideal:2,priority:'A',stage:'Elétrica'},
+{name:'CHAVE GRIFO STILLSON 12"',cat:'Hidráulica / ferramentas',supplier:'ConstruJá',ideal:2,priority:'A',stage:'Hidráulica'},
+{name:'SERROTE PROFISSIONAL',cat:'Ferramentas manuais',supplier:'ConstruJá',ideal:2,priority:'A',stage:'Ferramentas'},
+{name:'IRWIN - BROCA VIDEA 6,0MM',cat:'Brocas',supplier:'ConstruJá',ideal:6,priority:'A',stage:'Ferramentas'},
+{name:'IRWIN - BROCA VIDEA 8,0MM 5/16',cat:'Brocas',supplier:'ConstruJá',ideal:6,priority:'A',stage:'Ferramentas'},
+{name:'IRWIN - BROCA VIDEA 10,0MM 13/32',cat:'Brocas',supplier:'ConstruJá',ideal:4,priority:'A',stage:'Ferramentas'},
+{name:'BROCA VIDEA SDS PLUS 8MM',cat:'Brocas',supplier:'ConstruJá',ideal:4,priority:'A',stage:'Ferramentas'},
+{name:'FERJA - BROCA VIDEA SDS PLUS 10,0X300',cat:'Brocas',supplier:'ConstruJá',ideal:4,priority:'A',stage:'Ferramentas'},
+{name:'DISCO CORTE FERRO 4.1/2',cat:'Discos e abrasivos',supplier:'ConstruJá',ideal:10,priority:'A',stage:'Ferramentas'},
+{name:'DISCO CORTE INOX 4.1/2',cat:'Discos e abrasivos',supplier:'ConstruJá',ideal:10,priority:'A',stage:'Ferramentas'},
+{name:'DISCO FLAP 115',cat:'Discos e abrasivos',supplier:'ConstruJá',ideal:6,priority:'A',stage:'Ferramentas'},
+{name:'RÉGUA PEDREIRO ALUMÍNIO',cat:'Ferramentas de pedreiro',supplier:'ConstruJá',ideal:2,priority:'A',stage:'Ferramentas'},
+{name:'LUVA DE CORRER SOLDÁVEL 25 MM',cat:'Conexões soldáveis',supplier:'Ambos',ideal:3,priority:'A',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'LUVA DE CORRER SOLDÁVEL 32 MM',cat:'Conexões soldáveis',supplier:'Ambos',ideal:3,priority:'A',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'UNIÃO SOLDÁVEL 25 MM / 3/4',cat:'Conexões soldáveis',supplier:'Ambos',ideal:3,priority:'A',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'UNIÃO SOLDÁVEL 32 MM / 1',cat:'Conexões soldáveis',supplier:'Ambos',ideal:2,priority:'B',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'TÊ REDUÇÃO SOLDÁVEL 32 X 25 MM',cat:'Conexões soldáveis',supplier:'Ambos',ideal:3,priority:'A',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'BUCHA REDUÇÃO LONGA SOLDÁVEL 50 X 32 MM',cat:'Conexões soldáveis',supplier:'Ambos',ideal:2,priority:'B',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'CAP SOLDÁVEL 32 MM',cat:'Conexões soldáveis',supplier:'Ambos',ideal:3,priority:'B',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'JUNÇÃO REDUÇÃO ESGOTO 100 X 50 MM',cat:'Conexões esgoto',supplier:'Ambos',ideal:3,priority:'A',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'JUNÇÃO REDUÇÃO ESGOTO 100 X 75 MM',cat:'Conexões esgoto',supplier:'Ambos',ideal:2,priority:'B',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'LUVA DE CORRER ESGOTO 75 MM',cat:'Conexões esgoto',supplier:'Ambos',ideal:2,priority:'B',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'VÁLVULA DE RETENÇÃO PARA ESGOTO 100 MM',cat:'Esgoto',supplier:'Ambos',ideal:1,priority:'B',stage:'Hidráulica',origin:'Manutenção'},
+{name:'VÁLVULA DE RETENÇÃO PARA ÁGUA',cat:'Hidráulica',supplier:'Ambos',ideal:2,priority:'B',stage:'Hidráulica',origin:'Manutenção'},
+{name:'ADAPTADOR COM FLANGE E ANEL PARA CAIXA D\'ÁGUA 32 MM',cat:'Caixa d\'água',supplier:'Ambos',ideal:2,priority:'A',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'CAIXA SIFONADA 150 X 150 X 75 MM',cat:'Esgoto',supplier:'Ambos',ideal:2,priority:'A',stage:'Hidráulica',origin:'Essencial da obra'},
+{name:'PROLONGADOR PARA CAIXA SIFONADA',cat:'Esgoto',supplier:'Ambos',ideal:3,priority:'A',stage:'Hidráulica',origin:'Manutenção'},
+{name:'RALO INVISÍVEL 15 X 15',cat:'Acabamento hidráulico',supplier:'Ambos',ideal:2,priority:'B',stage:'Banheiro',origin:'Acabamento'},
+{name:'VÁLVULA AMERICANA PARA PIA',cat:'Cozinha / hidráulica',supplier:'Ambos',ideal:3,priority:'A',stage:'Manutenção',origin:'Manutenção'},
+{name:'ANEL DE VEDAÇÃO PARA BACIA SANITÁRIA COM GUIA',cat:'Banheiro / manutenção',supplier:'Ambos',ideal:4,priority:'A',stage:'Banheiro',origin:'Manutenção'},
+{name:'REPARO PARA REGISTRO DE PRESSÃO',cat:'Reparos hidráulicos',supplier:'Ambos',ideal:4,priority:'A',stage:'Manutenção',origin:'Manutenção'},
+{name:'REPARO PARA VÁLVULA DE DESCARGA',cat:'Reparos hidráulicos',supplier:'Ambos',ideal:3,priority:'A',stage:'Banheiro',origin:'Manutenção'}
+].map((x,i)=>({...x,id:'c'+(i+1),status:'faltando',min:1,origin:x.origin||'Essencial da obra',lost:0,buyNow:false,novelty:false,notes:'',price:'',lastBuy:''}));
+
+function normalize(p,i){
+  let status=p.status||'faltando';
+  if(status==='estoque') status='tenho';
+  if(status==='comprar') status='faltando';
+  if(status==='planejado') status='faltando';
+  return {
+    id:p.id||('m'+Date.now()+i),
+    name:p.name||'Produto',
+    cat:p.cat||'Outros',
+    supplier:p.supplier||'ConstruJá',
+    priority:(p.priority||'B').charAt(0),
+    stage:p.stage||guessStage(p.cat||'',p.name||''),
+    origin:p.origin||'Essencial da obra',
+    ideal:Number(p.ideal ?? p.qty ?? 1),
+    min:Number(p.min ?? 1),
+    price:p.price ?? '',
+    lastBuy:p.lastBuy||'',
+    notes:p.notes||p.why||'',
+    lost:Number(p.lost||0),
+    buyNow:Boolean(p.buyNow),
+    novelty:Boolean(p.novelty),
+    status,
+  };
+}
+function guessStage(cat,name){
+  const t=(cat+' '+name).toLowerCase();
+  if(t.includes('hidrául')||t.includes('cano')||t.includes('sif'))return'Hidráulica';
+  if(t.includes('elétr')||t.includes('disjunt')||t.includes('fio'))return'Elétrica';
+  if(t.includes('piso')||t.includes('revest'))return'Piso e revestimento';
+  if(t.includes('tinta')||t.includes('pint'))return'Pintura';
+  if(t.includes('telh'))return'Telhado';
+  if(t.includes('ferrament')||t.includes('broca')||t.includes('disco')||t.includes('alicate'))return'Ferramentas';
+  return'Manutenção';
+}
+let saved=null;
+try{saved=JSON.parse(localStorage.getItem(DBKEY)||'null')}catch(e){}
+const savedList=(saved&&Array.isArray(saved)?saved:[]).map(normalize);
+const savedByName=new Map(savedList.map(p=>[p.name.trim().toLowerCase(),p]));
+const mergedSeed=seed.map((s,i)=>{
+  const key=s.name.trim().toLowerCase();
+  return savedByName.has(key) ? {...normalize(s,i),...savedByName.get(key)} : normalize(s,i);
+});
+const seedNames=new Set(seed.map(s=>s.name.trim().toLowerCase()));
+const customSaved=savedList.filter(p=>!seedNames.has(p.name.trim().toLowerCase()));
+let products=[...mergedSeed,...customSaved];
+let currentView='faltando', editId=null;
+const $=s=>document.querySelector(s);
+function persist(){localStorage.setItem(DBKEY,JSON.stringify(products))}
+persist();
+
+const views=[
+['faltando','Ainda não tenho'],['repor','Precisa repor'],['comprar','Comprar agora'],
+['tenho','Já tenho'],['novidades','Novidades'],['analisar','Quero analisar'],['casa','Casa completa']
+];
+
+function setup(){
+  $('#nav').innerHTML=views.map(([v,t],i)=>`<button data-v="${v}" class="${i===0?'active':''}">${t}</button>`).join('');
+  $('#nav').onclick=e=>{const b=e.target.closest('button');if(!b)return;currentView=b.dataset.v;document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x===b));render()};
+  $('#stageFilter').innerHTML='<option value="">Todas etapas</option>'+STAGES.map(s=>`<option>${s}</option>`).join('');
+  $('#fStage').innerHTML=STAGES.map(s=>`<option>${s}</option>`).join('');
+  ['search','supplierFilter','priorityFilter','stageFilter'].forEach(id=>$('#'+id).addEventListener(id==='search'?'input':'change',render));
+  $('#addBtn').onclick=()=>openModal();
+  $('#cancelBtn').onclick=closeModal;
+  $('#modalWrap').onclick=e=>{if(e.target.id==='modalWrap')closeModal()};
+  $('#saveBtn').onclick=saveProduct;
+  $('#backupBtn').onclick=backup;
+}
+
+function titleForView(){return Object.fromEntries(views)[currentView]||'Produtos'}
+function filtered(){
+  let list=[...products];
+  if(currentView==='faltando') list=list.filter(p=>p.status==='faltando'&&!p.novelty);
+  if(currentView==='repor') list=list.filter(p=>p.status==='repor');
+  if(currentView==='comprar') list=list.filter(p=>p.buyNow);
+  if(currentView==='tenho') list=list.filter(p=>p.status==='tenho');
+  if(currentView==='novidades') list=list.filter(p=>p.novelty);
+  if(currentView==='analisar') list=list.filter(p=>p.status==='analisar');
+  if(currentView==='casa') return [];
+  const q=$('#search').value.trim().toLowerCase(), sup=$('#supplierFilter').value, pri=$('#priorityFilter').value, stage=$('#stageFilter').value;
+  list=list.filter(p=>(!q||(p.name+' '+p.cat+' '+p.supplier).toLowerCase().includes(q))&&(!sup||p.supplier===sup)&&(!pri||p.priority===pri)&&(!stage||p.stage===stage));
+  return list.sort((a,b)=>(b.lost-a.lost)||((a.priority||'C').localeCompare(b.priority||'C'))||a.name.localeCompare(b.name));
+}
+function render(){
+  updateStats();
+  $('#viewTitle').textContent=titleForView();
+  $('#stagePanel').style.display=currentView==='casa'?'block':'none';
+  $('#grid').style.display=currentView==='casa'?'none':'grid';
+  if(currentView==='casa'){renderStages();$('#countText').textContent='';return}
+  const list=filtered();
+  $('#countText').textContent=list.length+' item(ns)';
+  $('#grid').innerHTML=list.length?list.map(card).join(''):'<div class="empty">Nenhum produto nesta lista.</div>';
+}
+function updateStats(){
+  $('#sMissing').textContent=products.filter(p=>p.status==='faltando').length;
+  $('#sReorder').textContent=products.filter(p=>p.status==='repor').length;
+  $('#sBuy').textContent=products.filter(p=>p.buyNow).length;
+  $('#sHave').textContent=products.filter(p=>p.status==='tenho').length;
+  $('#sNews').textContent=products.filter(p=>p.novelty).length;
+  $('#sLost').textContent=products.reduce((s,p)=>s+p.lost,0);
+}
+function money(v){if(v===''||v==null)return'';return'R$ '+Number(v).toFixed(2).replace('.',',')}
+function card(p){
+  const hot=p.lost>=2||p.buyNow;
+  return `<div class="card ${hot?'hot':''}">
+    <div class="line1"><div class="cat">${esc(p.cat)}</div><span class="priority ${p.priority}">${p.priority}</span></div>
+    <div class="name">${esc(p.name)}</div>
+    <div class="meta">
+      <span class="tag">${esc(p.supplier)}</span><span class="tag">${esc(p.stage)}</span><span class="tag">${esc(p.origin)}</span>
+      ${p.novelty?'<span class="tag">NOVO</span>':''}${p.buyNow?'<span class="tag">COMPRAR AGORA</span>':''}
+    </div>
+    <div class="meta"><span class="tag">mín. ${p.min}</span><span class="tag">ideal ${p.ideal}</span>${p.price!==''?`<span class="tag">${money(p.price)}</span>`:''}${p.lastBuy?`<span class="tag">últ. ${p.lastBuy.split('-').reverse().join('/')}</span>`:''}</div>
+    <div class="lost"><strong>Cliente pediu e não tinha: ${p.lost}x</strong><button onclick="lost('${p.id}')">+1</button></div>
+    ${p.notes?`<div class="notes">${esc(p.notes)}</div>`:''}
+    <div class="actions">
+      ${p.status!=='tenho'?`<button class="ok" onclick="setStatus('${p.id}','tenho')">Já tenho</button>`:`<button class="warn" onclick="setStatus('${p.id}','repor')">Precisa repor</button>`}
+      <button class="${p.buyNow?'warn':'dark'}" onclick="toggleBuy('${p.id}')">${p.buyNow?'Tirar da compra':'Comprar agora'}</button>
+      <button class="soft" onclick="edit('${p.id}')">Editar</button>
+      <button class="soft" onclick="setStatus('${p.id}','analisar')">Analisar</button>
+    </div>
+  </div>`;
+}
+function renderStages(){
+  $('#stageGrid').innerHTML=STAGES.map(s=>{
+    const all=products.filter(p=>p.stage===s), have=all.filter(p=>p.status==='tenho'||p.status==='repor').length;
+    const pct=all.length?Math.round(have/all.length*100):0;
+    return `<div class="stage"><div class="stage-head"><span>${s}</span><span>${pct}%</span></div><div class="bar"><span style="width:${pct}%"></span></div><div class="notes" style="margin-top:7px">${have} de ${all.length} itens cobertos</div></div>`
+  }).join('');
+}
+function find(id){return products.find(p=>p.id===id)}
+function lost(id){const p=find(id);p.lost++;persist();render()}
+function setStatus(id,status){const p=find(id);p.status=status;if(status==='tenho'){p.buyNow=false;p.novelty=false}persist();render()}
+function toggleBuy(id){const p=find(id);p.buyNow=!p.buyNow;persist();render()}
+function edit(id){openModal(find(id))}
+function openModal(p=null){
+  editId=p?.id||null;$('#modalTitle').textContent=p?'Editar produto':'Adicionar produto';
+  $('#fName').value=p?.name||'';$('#fCat').value=p?.cat||'';$('#fSupplier').value=p?.supplier||'ConstruJá';
+  $('#fPriority').value=p?.priority||'B';$('#fStage').value=p?.stage||'Manutenção';$('#fOrigin').value=p?.origin||'Essencial da obra';
+  $('#fIdeal').value=p?.ideal??2;$('#fMin').value=p?.min??1;$('#fPrice').value=p?.price??'';$('#fLastBuy').value=p?.lastBuy||'';$('#fNotes').value=p?.notes||'';
+  $('#modalWrap').style.display='flex';
+}
+function closeModal(){$('#modalWrap').style.display='none'}
+function saveProduct(){
+  const name=$('#fName').value.trim();if(!name)return alert('Digite o nome do produto.');
+  const obj={name,cat:$('#fCat').value.trim()||'Outros',supplier:$('#fSupplier').value,priority:$('#fPriority').value,stage:$('#fStage').value,origin:$('#fOrigin').value,ideal:Number($('#fIdeal').value||0),min:Number($('#fMin').value||0),price:$('#fPrice').value===''?'':Number($('#fPrice').value),lastBuy:$('#fLastBuy').value,notes:$('#fNotes').value.trim()};
+  if(editId) Object.assign(find(editId),obj);
+  else products.push({...obj,id:'p'+Date.now(),status:'faltando',lost:0,buyNow:false,novelty:obj.origin==='Novidade do fornecedor'});
+  persist();closeModal();render();
+}
+function backup(){
+  const blob=new Blob([JSON.stringify(products,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='paulocir-painel-compras-backup.json';a.click();URL.revokeObjectURL(a.href);
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+setup();render();
+</script>
+</body>
+</html>
